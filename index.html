@@ -1,296 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cerita Kopi | Kopi yang menyajikan cerita perjalanan hidup.</title>
     <!-- my style -->
-    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="stylesheet" href="src/css/style.css" />
     <!-- google font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
     <!-- feathericons -->
     <script src="https://unpkg.com/feather-icons"></script>
-</head>
+    <!-- alpine js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- app js -->
+    <script src="src/js/app.js"></script>
+  </head>
 
-<body>
+  <body>
     <!-- navbar start -->
-    <nav class="navbar">
-        <a href="#" class="navbar-logo">Cerita<span>Kopi</span></a>
+    <nav class="navbar" x-data="product">
+      <a href="#" class="navbar-logo">Cerita<span>Kopi</span></a>
 
-        <div class="navbar-nav">
-            <a href="#home">Home</a>
-            <a href="#about">Tentang Kami</a>
-            <a href="#menu">Menu</a>
-            <a href="#products">Produk</a>
-            <a href="#contact">Kontak</a>
-        </div>
+      <div class="navbar-nav">
+        <a href="#home">Home</a>
+        <a href="#about">Tentang Kami</a>
+        <a href="#menu">Menu</a>
+        <a href="#products">Produk</a>
+        <a href="#contact">Kontak</a>
+      </div>
 
-        <div class="navbar-extra">
-            <a href="#" id="search-btn"><i data-feather="search"></i></a>
-            <a href="#" id="shopping-cart-btn"><i data-feather="shopping-cart"></i></a>
-            <a href="#" id="hamburger-menu"><i data-feather="menu"></i></a>
-        </div>
+      <div class="navbar-extra">
+        <a href="#" id="search-btn"><i data-feather="search"></i></a>
+        <a href="#" id="shopping-cart-btn"><i data-feather="shopping-cart"></i> <span class="quantity-notif" x-show="$store.cart.quantity" x-text="$store.cart.quantity"></span> </a>
+        <a href="#" id="hamburger-menu"><i data-feather="menu"></i></a>
+      </div>
 
-        <!-- search form start -->
-        <div class="search-form">
-            <input type="search" id="search-box" placeholder="search here...">
-            <label for="search-box"><i data-feather="search"></i></label>
-        </div>
-        <!-- search form End -->
+      <!-- search form start -->
+      <div class="search-form">
+        <input type="search" id="search-box" placeholder="search here..." />
+        <label for="search-box"><i data-feather="search"></i></label>
+      </div>
+      <!-- search form End -->
 
-        <!-- Shoping cart Start -->
-        <div class="shopping-cart">
-            <div class="cart-item">
-                <img src="src/img/products/produk-1.png" alt="Product 1">
-                <div class="item-detail">
-                    <h3>product 1</h3>
-                    <div class="item-price">IDR 30K</div>
-                </div>
-                <i data-feather="trash-2" class="remove-item"></i>
+      <!-- Shoping cart Start -->
+      <div class="shopping-cart">
+        <template x-for="(item,index) in $store.cart.items" x-key="index">
+          <div class="cart-item">
+            <img :src="`src/img/products/${item.img}`" :alt="item.name" />
+            <div class="item-detail">
+              <h3 x-text="item.name"></h3>
+              <div class="item-price">
+                <span x-text="rupiah(item.price)"></span> &times;
+                <button id="remove" @click="$store.cart.remove(item.id)">&minus;</button>
+                <span x-text="item.quantity"></span>
+                <button id="add" @click="$store.cart.add(item)">&plus;</button> &equals;
+                <span x-text="rupiah(item.total)"></span>
+              </div>
             </div>
-            <div class="cart-item">
-                <img src="src/img/products/produk-1.png" alt="Product 1">
-                <div class="item-detail">
-                    <h3>product 1</h3>
-                    <div class="item-price">IDR 30K</div>
-                </div>
-                <i data-feather="trash-2" class="remove-item"></i>
-            </div>
-            <div class="cart-item">
-                <img src="src/img/products/produk-1.png" alt="Product 1">
-                <div class="item-detail">
-                    <h3>product 1</h3>
-                    <div class="item-price">IDR 30K</div>
-                </div>
-                <i data-feather="trash-2" class="remove-item"></i>
-            </div>
+          </div>
+        </template>
+        <h4 x-show="!$store.cart.items.length" class="keranjang-kosong">Keranjang masih Kosong</h4>
+        <h4 x-show="$store.cart.items.length">Total : <span x-text="rupiah($store.cart.total)"></span></h4>
+        <div class="form-container" x-show="$store.cart.items.length">
+          <form action="" id="checkoutForm">
+            <label for="name">
+              <span>Nama :</span>
+              <input type="text" name="name" id="name" />
+            </label>
+            <label for="email">
+              <span>Email :</span>
+              <input type="email" name="email" id="email" />
+            </label>
+            <label for="phone">
+              <span>Telfon :</span>
+              <input type="number" name="phone" id="phone" autocomplete="off" />
+            </label>
+            <button type="submit" class="checkout-btn" id="checkout-btn" value="checkout">Bayar</button>
+          </form>
         </div>
-        <!-- Shoping cart End -->
+      </div>
+      <!-- Shoping cart End -->
     </nav>
     <!-- Navbar End -->
 
     <!-- Hero Section Star -->
     <section class="hero" id="home">
-        <main class="content">
-            <h1>Cerita <span>Kopi</span></h1>
-            <p>Kopi yang menyajikan cerita perjalanan hidup.</p>
-
-        </main>
+      <main class="content">
+        <h1>Cerita <span>Kopi</span></h1>
+        <p>Kopi yang menyajikan cerita perjalanan hidup.</p>
+      </main>
     </section>
     <!-- Hero Section End -->
 
     <!-- About Section Start -->
     <section class="about" id="about">
-        <h2><span>Tentang</span> Kami</h2>
+      <h2><span>Tentang</span> Kami</h2>
 
-        <div class="row">
-            <div class="about-img">
-                <img src="src/img/tentang-kami.jpg" alt="Tentang Kami">
-            </div>
-            <div class="content">
-                <h3>mengapa memilih kopi kami?</h3>
-                <p>Cerita Kopi” bukan hanya sebuah kedai kopi biasa. Di sini, setiap cangkir kopi menceritakan sebuah
-                    perjalanan hidup yang unik. Dengan setiap tegukan, Anda akan merasakan pengalaman yang berbeda,
-                    membuat momen minum kopi Anda menjadi lebih kaya dan bermakna. Kami menggunakan biji kopi pilihan
-                    terbaik dari berbagai daerah di Indonesia, diproses dengan hati-hati untuk memastikan bahwa Anda
-                    mendapatkan rasa dan aroma terbaik.</p>
-
-            </div>
+      <div class="row">
+        <div class="about-img">
+          <img src="src/img/tentang-kami.jpg" alt="Tentang Kami" />
         </div>
+        <div class="content">
+          <h3>mengapa memilih kopi kami?</h3>
+          <p>
+            Cerita Kopi” bukan hanya sebuah kedai kopi biasa. Di sini, setiap cangkir kopi menceritakan sebuah perjalanan hidup yang unik. Dengan setiap tegukan, Anda akan merasakan pengalaman yang berbeda, membuat momen minum kopi Anda
+            menjadi lebih kaya dan bermakna. Kami menggunakan biji kopi pilihan terbaik dari berbagai daerah di Indonesia, diproses dengan hati-hati untuk memastikan bahwa Anda mendapatkan rasa dan aroma terbaik.
+          </p>
+        </div>
+      </div>
     </section>
     <!-- About Section end -->
 
     <!-- Menu Section Start -->
     <section class="menu" id="menu">
-        <h2><span>Menu</span> Kami</h2>
-        <p>Di “Cerita Kopi”, kami menawarkan berbagai pilihan menu yang dirancang untuk memanjakan penikmat kopi. Mulai
-            dari kopi hitam klasik yang kuat dan berani, hingga latte manis dan krim yang lembut.</p>
-        <div class="row">
-            <div class="menu-card">
-                <img class="menu-card-img" src="src/img/menu/menu-1.png" alt="kopi Tubruk">
-                <h3 class="menu-card-title">-Kopi Tubruk</h3>
-                <p class="menu-card-price">IDR 5K</p>
-            </div>
-            <div class="menu-card">
-                <img class="menu-card-img" src="src/img/menu/menu-2.png" alt="Photo by allison griffith on Unsplash">
-                <h3 class="menu-card-title">-Cappucino</h3>
-                <p class="menu-card-price">IDR 15K</p>
-            </div>
-            <div class="menu-card">
-                <img class="menu-card-img" src="src/img/menu/menu-3.png" alt="Photo by tabitha turner on Unsplash">
-                <h3 class="menu-card-title">-Latte</h3>
-                <p class="menu-card-price">IDR 15K</p>
-            </div>
-            <div class="menu-card">
-                <img class="menu-card-img" src="src/img/menu/menu-4.png" alt="Photo by Victor Freitas from Pexels">
-                <h3 class="menu-card-title">-Espresso</h3>
-                <p class="menu-card-price">IDR 15K</p>
-            </div>
+      <h2><span>Menu</span> Kami</h2>
+      <p>Di “Cerita Kopi”, kami menawarkan berbagai pilihan menu yang dirancang untuk memanjakan penikmat kopi. Mulai dari kopi hitam klasik yang kuat dan berani, hingga latte manis dan krim yang lembut.</p>
+      <div class="row">
+        <div class="menu-card">
+          <img class="menu-card-img" src="src/img/menu/menu-1.png" alt="kopi Tubruk" />
+          <h3 class="menu-card-title">-Kopi Tubruk</h3>
+          <p class="menu-card-price">IDR 5K</p>
         </div>
+        <div class="menu-card">
+          <img class="menu-card-img" src="src/img/menu/menu-2.png" alt="Photo by allison griffith on Unsplash" />
+          <h3 class="menu-card-title">-Cappucino</h3>
+          <p class="menu-card-price">IDR 15K</p>
+        </div>
+        <div class="menu-card">
+          <img class="menu-card-img" src="src/img/menu/menu-3.png" alt="Photo by tabitha turner on Unsplash" />
+          <h3 class="menu-card-title">-Latte</h3>
+          <p class="menu-card-price">IDR 15K</p>
+        </div>
+        <div class="menu-card">
+          <img class="menu-card-img" src="src/img/menu/menu-4.png" alt="Photo by Victor Freitas from Pexels" />
+          <h3 class="menu-card-title">-Espresso</h3>
+          <p class="menu-card-price">IDR 15K</p>
+        </div>
+      </div>
     </section>
     <!-- Menu Section End -->
 
     <!-- Product Section Start -->
-    <section class="products" id="products">
-        <h2>Produk <span>Unggulan</span> Kami</h2>
-        <p>Berikut beberapa produk kopi yang mencerminkan dedikasi kami terhadap
-            kualitas dan rasa.</p>
-        <div class="row">
-            <div class="product-card">
-                <div class="product-icons">
-                    <a href=""><i data-feather="shopping-cart"></i></a>
-                    <a href="" class="item-detail-button"><i data-feather="eye"></i></a>
-                </div>
-                <div class="product-img">
-                    <img src="src/img/products/produk-1.png" alt="Gambar Produk 1">
-                </div>
-                <div class="product-content">
-                    <h3>Kopi Pagi Ceria</h3>
-                    <div class="product-stars">
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star"></i>
-                    </div>
-                    <div class="product-price"> IDR 30K <span>IDR 55K</span> </div>
-                </div>
+    <section class="products" id="products" x-data="products">
+      <h2>Produk <span>Unggulan</span> Kami</h2>
+      <p>Berikut beberapa produk kopi yang mencerminkan dedikasi kami terhadap kualitas dan rasa.</p>
+      <div class="row">
+        <template x-for="(item, index) in items" x-key="index">
+          <div class="product-card">
+            <div class="product-icons">
+              <a href="#" @click.prevent="$store.cart.add(item)">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="src/img/icon/feather-sprite.svg#shopping-cart" />
+                </svg>
+              </a>
+              <a href="" class="item-detail-button">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="src/img/icon/feather-sprite.svg#eye" />
+                </svg>
+              </a>
             </div>
-            <div class="product-card">
-                <div class="product-icons">
-                    <a href=""><i data-feather="shopping-cart"></i></a>
-                    <a href="" class="item-detail-button"><i data-feather="eye"></i></a>
-                </div>
-                <div class="product-img">
-                    <img src="src/img/products/produk-2.png" alt="Gambar Produk 2">
-                </div>
-                <div class="product-content">
-                    <h3>Kopi Purnama</h3>
-                    <div class="product-stars">
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star"></i>
-                    </div>
-                    <div class="product-price"> IDR 35K <span>IDR 60K</span> </div>
-                </div>
+            <div class="product-img">
+              <img :src="`src/img/products/${item.img}`" :alt="item.name" />
             </div>
-            <div class="product-card">
-                <div class="product-icons">
-                    <a href=""><i data-feather="shopping-cart"></i></a>
-                    <a href="" class="item-detail-button"><i data-feather="eye"></i></a>
-                </div>
-                <div class="product-img">
-                    <img src="src/img/products/produk-3.png" alt="Gambar Produk 3">
-                </div>
-                <div class="product-content">
-                    <h3>Kopi Harmoni</h3>
-                    <div class="product-stars">
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star"></i>
-                    </div>
-                    <div class="product-price"> IDR 35K <span>IDR 60K</span> </div>
-                </div>
+            <div class="product-content">
+              <h3 x-text="item.name"></h3>
+              <div class="product-stars">
+                <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="src/img/icon/feather-sprite.svg#star" />
+                </svg>
+                <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="src/img/icon/feather-sprite.svg#star" />
+                </svg>
+                <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="src/img/icon/feather-sprite.svg#star" />
+                </svg>
+                <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="src/img/icon/feather-sprite.svg#star" />
+                </svg>
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="src/img/icon/feather-sprite.svg#star" />
+                </svg>
+              </div>
+              <div class="product-price"><span x-text="rupiah(item.price)"></span></div>
             </div>
-        </div>
+          </div>
+        </template>
+      </div>
     </section>
-    <!-- Product Section End -->
 
+    <!-- Product Section End -->
 
     <!-- contact section start -->
     <section class="contact" id="contact">
-        <h2><span>Kontak</span> Kami</h2>
-        <p>Untuk informasi lebih lanjut tentang “Cerita Kopi”, jangan ragu untuk menghubungi kami. Kami selalu senang
-            mendengar dari Anda. </p>
+      <h2><span>Kontak</span> Kami</h2>
+      <p>Untuk informasi lebih lanjut tentang “Cerita Kopi”, jangan ragu untuk menghubungi kami. Kami selalu senang mendengar dari Anda.</p>
 
-        <div class="row">
-            <iframe class="contact-map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31835.2840203787!2d117.62902610628215!3d4.139380637269003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3215bc267177f995%3A0xc3fd6e9667d03afd!2sNunukan%2C%20Nunukan%20Tim.%2C%20Kec.%20Nunukan%2C%20Kabupaten%20Nunukan%2C%20Kalimantan%20Timur!5e0!3m2!1sid!2sid!4v1715178770207!5m2!1sid!2sid"
-                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="row">
+        <iframe
+          class="contact-map"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31835.2840203787!2d117.62902610628215!3d4.139380637269003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3215bc267177f995%3A0xc3fd6e9667d03afd!2sNunukan%2C%20Nunukan%20Tim.%2C%20Kec.%20Nunukan%2C%20Kabupaten%20Nunukan%2C%20Kalimantan%20Timur!5e0!3m2!1sid!2sid!4v1715178770207!5m2!1sid!2sid"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
 
-            <form action="">
-                <div class="input-group">
-                    <i data-feather="user"></i>
-                    <input type="text" placeholder="nama">
-                </div>
-                <div class="input-group">
-                    <i data-feather="mail"></i>
-                    <input type="email" placeholder="email">
-                </div>
-                <div class="input-group">
-                    <i data-feather="phone"></i>
-                    <input type="number" placeholder="no hp">
-                </div>
-                <button type="submit" class="btn">Kirim Pesan</button>
-            </form>
-        </div>
+        <form action="">
+          <div class="input-group">
+            <i data-feather="user"></i>
+            <input type="text" placeholder="nama" />
+          </div>
+          <div class="input-group">
+            <i data-feather="mail"></i>
+            <input type="email" placeholder="email" />
+          </div>
+          <div class="input-group">
+            <i data-feather="phone"></i>
+            <input type="number" placeholder="no hp" />
+          </div>
+          <button type="submit" class="btn">Kirim Pesan</button>
+        </form>
+      </div>
     </section>
     <!-- contact section end -->
 
     <!-- footer start -->
     <footer>
-        <div class="socials">
-            <a href=""><i data-feather="instagram"></i></a>
-            <a href=""><i data-feather="twitter"></i></a>
-            <a href=""><i data-feather="facebook"></i></a>
-        </div>
+      <div class="socials">
+        <a href=""><i data-feather="instagram"></i></a>
+        <a href=""><i data-feather="twitter"></i></a>
+        <a href=""><i data-feather="facebook"></i></a>
+      </div>
 
-        <div class="links">
-            <a href="#home">Home</a>
-            <a href="#about">Tentang Kami</a>
-            <a href="#menu">Menu</a>
-            <a href="#contact">Kontak</a>
-        </div>
+      <div class="links">
+        <a href="#home">Home</a>
+        <a href="#about">Tentang Kami</a>
+        <a href="#menu">Menu</a>
+        <a href="#contact">Kontak</a>
+      </div>
 
-        <div class="credit">
-            <p>Created by <a href="https://www.instagram.com/syarkawiamins/">Syarkawi
-                    Amin Syukur</a>. | &copy; 2024</p>
-        </div>
+      <div class="credit">
+        <p>Created with ❤️ by <a href="https://www.instagram.com/syarkawiamins/">Syarkawi Amin Syukur</a> | &copy; 2024</p>
+      </div>
     </footer>
     <!-- footer End -->
 
-
     <!-- modal Box Item Detail Start -->
     <div class="modal" id="item-detail-modal">
-        <div class="modal-container">
-            <a href="#" class="close-icon"><i data-feather="x"></i></a>
-            <div class="modal-content">
-                <img src="src/img/products/produk-1.png" alt="Product 1">
-                <div class="product-content">
-                    <h3>Kopi Pagi Ceria</h3>
-                    <p> Kopi ini dirancang untuk memberikan semangat di pagi hari. Dengan cita rasa yang penuh aroma,
-                        kopi ini dapat menemani anda menyapa matahari dengan lebih ceria</p>
-                    <h3>Kopi Pagi Ceria</h3>
-                    <div class="product-stars">
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star"></i>
-                    </div>
-                    <div class="product-price"> IDR 30K <span>IDR 55K</span> </div>
-                    <a href="#"><i data-feather="shopping-cart"></i><span>add to cart</span></a>
-                </div>
+      <div class="modal-container">
+        <a href="#" class="close-icon"><i data-feather="x"></i></a>
+        <div class="modal-content">
+          <img src="src/img/products/produk-1.png" alt="Product 1" />
+          <div class="product-content">
+            <h3>Kopi Pagi Ceria</h3>
+            <p>Kopi ini dirancang untuk memberikan semangat di pagi hari. Dengan cita rasa yang penuh aroma, kopi ini dapat menemani anda menyapa matahari dengan lebih ceria</p>
+            <h3>Kopi Pagi Ceria</h3>
+            <div class="product-stars">
+              <i data-feather="star" class="star-full"></i>
+              <i data-feather="star" class="star-full"></i>
+              <i data-feather="star" class="star-full"></i>
+              <i data-feather="star" class="star-full"></i>
+              <i data-feather="star"></i>
             </div>
+            <div class="product-price">IDR 30K <span>IDR 55K</span></div>
+            <a href="#"><i data-feather="shopping-cart"></i><span>add to cart</span></a>
+          </div>
         </div>
+      </div>
     </div>
     <!-- modal Box Item Detail End -->
 
     <!-- icon script -->
     <script>
-        feather.replace();
+      feather.replace();
     </script>
     <!-- my js -->
     <script src="src/js/script.js"></script>
-</body>
-
+  </body>
 </html>
